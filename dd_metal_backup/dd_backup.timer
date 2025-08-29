@@ -1,0 +1,10 @@
+[Unit]
+Description=Metal Backup Service Timer
+
+[Timer]
+OnUnitActiveSec=3d
+Persistent=true
+Unit=dd_backup.service
+
+[Install]
+WantedBy=timers.target
