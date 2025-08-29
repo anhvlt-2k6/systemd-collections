@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# Save in /opt/dd_backup.sh
 # safer error handler: prints exit code, line, and last command; removes tmp file if present
 TMP_FILE=""
 error_exit() {
@@ -29,13 +28,9 @@ for cmd in dd date gzip; do
     fi
 done
 
-
 DATE=$(date +"%Y-%m-%d")
-
-# Change these variables of possible
-TARGET_DEVICE="nvme0n1p4"
-BACKUP_DEST="/mnt/dc01_backup"
-
+TARGET_DEVICE="nvme0n1p2"
+BACKUP_DEST="/mnt/rpi_backup"
 BACKUP_DEVICE="/dev/$TARGET_DEVICE"
 
 # sanity checks
@@ -52,6 +47,18 @@ fi
 if [ ! -w "$BACKUP_DEST" ]; then
     echo "Backup destination $BACKUP_DEST is not writable." >&2
     exit 1
+fi
+
+# Optional: check available space vs device size if blockdev is available
+if command -v blockdev &>/dev/null && df --output=avail -B1 "$BACKUP_DEST" &>/dev/null; then
+    device_size=$(blockdev --getsize64 "$BACKUP_DEVICE" || echo 0)
+    avail_bytes=$(df --output=avail -B1 "$BACKUP_DEST" | tail -n1 | tr -d ' ')
+    # add a small headroom (10%)
+    needed=$(( device_size + device_size / 10 ))
+    if [ "$device_size" -gt 0 ] && [ "$avail_bytes" -lt "$needed" ]; then
+        echo "Not enough space on $BACKUP_DEST: device ~${device_size} bytes, available ${avail_bytes} bytes (need ~${needed})." >&2
+        exit 1
+    fi
 fi
 
 # Clean-up Backup Destination (Only one copy allowed) — safer: remove only matching files in BACKUP_DEST
