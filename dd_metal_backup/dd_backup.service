@@ -1,0 +1,9 @@
+[Unit]
+Description=Metal Backup Service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/dd_backup.sh
+
+[Install]
+WantedBy=multi-user.target
