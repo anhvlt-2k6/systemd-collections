@@ -1,3 +1,6 @@
+# Paste in /etc/systemd/system/dd_backup.service
+# Automatic running: sudo systemctl enable --now dd_backup
+
 [Unit]
 Description=Metal Backup Service
 
