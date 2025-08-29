@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
+# Save in /opt/dd_backup.sh
 # safer error handler: prints exit code, line, and last command; removes tmp file if present
 TMP_FILE=""
 error_exit() {
@@ -28,9 +29,13 @@ for cmd in dd date gzip; do
     fi
 done
 
+
 DATE=$(date +"%Y-%m-%d")
+
+# Change these variables of possible
 TARGET_DEVICE="nvme0n1p4"
 BACKUP_DEST="/mnt/dc01_backup"
+
 BACKUP_DEVICE="/dev/$TARGET_DEVICE"
 
 # sanity checks
